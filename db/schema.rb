@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160702071446) do
+ActiveRecord::Schema.define(version: 20160720151758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -359,6 +359,20 @@ ActiveRecord::Schema.define(version: 20160702071446) do
 
   add_index "fine_print_signatures", ["contract_id"], name: "index_fine_print_signatures_on_contract_id", using: :btree
   add_index "fine_print_signatures", ["user_id", "user_type", "contract_id"], name: "index_fine_print_signatures_on_u_id_and_u_type_and_c_id", unique: true, using: :btree
+
+  create_table "forum_posts", force: :cascade do |t|
+    t.integer  "entity_role_id",      null: false
+    t.integer  "content_page_id"
+    t.integer  "content_exercise_id"
+    t.string   "title",               null: false
+    t.text     "content",             null: false
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
+
+  add_index "forum_posts", ["content_exercise_id"], name: "index_forum_posts_on_content_exercise_id", using: :btree
+  add_index "forum_posts", ["content_page_id"], name: "index_forum_posts_on_content_page_id", using: :btree
+  add_index "forum_posts", ["entity_role_id"], name: "index_forum_posts_on_entity_role_id", using: :btree
 
   create_table "legal_targeted_contract_relationships", force: :cascade do |t|
     t.string   "child_gid",  null: false
@@ -868,6 +882,9 @@ ActiveRecord::Schema.define(version: 20160702071446) do
   add_foreign_key "course_profile_profiles", "entity_courses", on_update: :cascade, on_delete: :cascade
   add_foreign_key "course_profile_profiles", "school_district_schools", on_update: :cascade, on_delete: :nullify
   add_foreign_key "course_profile_profiles", "time_zones", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "forum_posts", "content_exercises", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "forum_posts", "content_pages", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "forum_posts", "entity_roles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "role_role_users", "entity_roles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "role_role_users", "user_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "school_district_schools", "school_district_districts", on_update: :cascade, on_delete: :nullify
