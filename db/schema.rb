@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160720151758) do
+ActiveRecord::Schema.define(version: 20160725183619) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -359,6 +359,16 @@ ActiveRecord::Schema.define(version: 20160720151758) do
 
   add_index "fine_print_signatures", ["contract_id"], name: "index_fine_print_signatures_on_contract_id", using: :btree
   add_index "fine_print_signatures", ["user_id", "user_type", "contract_id"], name: "index_fine_print_signatures_on_u_id_and_u_type_and_c_id", unique: true, using: :btree
+
+  create_table "forum_comments", force: :cascade do |t|
+    t.integer  "entity_role_id", null: false
+    t.datetime "endorsed_at"
+    t.text     "content"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "forum_comments", ["entity_role_id"], name: "index_forum_comments_on_entity_role_id", using: :btree
 
   create_table "forum_posts", force: :cascade do |t|
     t.integer  "entity_role_id",      null: false
@@ -882,6 +892,7 @@ ActiveRecord::Schema.define(version: 20160720151758) do
   add_foreign_key "course_profile_profiles", "entity_courses", on_update: :cascade, on_delete: :cascade
   add_foreign_key "course_profile_profiles", "school_district_schools", on_update: :cascade, on_delete: :nullify
   add_foreign_key "course_profile_profiles", "time_zones", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "forum_comments", "entity_roles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "forum_posts", "content_exercises", on_update: :cascade, on_delete: :cascade
   add_foreign_key "forum_posts", "content_pages", on_update: :cascade, on_delete: :cascade
   add_foreign_key "forum_posts", "entity_roles", on_update: :cascade, on_delete: :cascade
