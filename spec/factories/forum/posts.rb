@@ -4,7 +4,7 @@ FactoryGirl.define do
     association :page, factory: :content_page
     association :exercise, factory: :content_exercise
 
-    title 'Test'
-    content 'Content'
+    title 'Why is Ted So Bad at Math?'
+    content 'He is really really bad'
   end
 end

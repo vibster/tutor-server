@@ -1,6 +1,6 @@
 class Api::V1::CoursesController < Api::V1::ApiController
 
-  before_filter :get_course, only: [:roster, :show, :update, :tasks, :dashboard, :cc_dashboard]
+  before_filter :get_course, only: [:roster, :show, :update, :tasks, :dashboard, :cc_dashboard, :forum]
 
   resource_description do
     api_versions "v1"

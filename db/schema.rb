@@ -362,6 +362,7 @@ ActiveRecord::Schema.define(version: 20160725183619) do
 
   create_table "forum_comments", force: :cascade do |t|
     t.integer  "entity_role_id", null: false
+    t.integer  "forum_post_id"
     t.datetime "endorsed_at"
     t.text     "content"
     t.datetime "created_at",     null: false
@@ -369,6 +370,7 @@ ActiveRecord::Schema.define(version: 20160725183619) do
   end
 
   add_index "forum_comments", ["entity_role_id"], name: "index_forum_comments_on_entity_role_id", using: :btree
+  add_index "forum_comments", ["forum_post_id"], name: "index_forum_comments_on_forum_post_id", using: :btree
 
   create_table "forum_posts", force: :cascade do |t|
     t.integer  "entity_role_id",      null: false
@@ -893,6 +895,7 @@ ActiveRecord::Schema.define(version: 20160725183619) do
   add_foreign_key "course_profile_profiles", "school_district_schools", on_update: :cascade, on_delete: :nullify
   add_foreign_key "course_profile_profiles", "time_zones", on_update: :cascade, on_delete: :nullify
   add_foreign_key "forum_comments", "entity_roles", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "forum_comments", "forum_posts"
   add_foreign_key "forum_posts", "content_exercises", on_update: :cascade, on_delete: :cascade
   add_foreign_key "forum_posts", "content_pages", on_update: :cascade, on_delete: :cascade
   add_foreign_key "forum_posts", "entity_roles", on_update: :cascade, on_delete: :cascade

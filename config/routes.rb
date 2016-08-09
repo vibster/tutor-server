@@ -62,6 +62,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :forum, only: [:index, :show, :create, :update]
+
     namespace 'cc' do
       get 'tasks/:cnx_book_id/:cnx_page_id', to: 'tasks#show', as: :task
       get 'tasks/:course_id/:cnx_page_id/stats', to: 'tasks#stats', as: :task_stats
@@ -85,6 +87,8 @@ Rails.application.routes.draw do
         get 'plans'
         get 'tasks'
         get 'roster'
+
+        resource :forum, only: [:show, :update, :create]
 
         scope :performance, controller: :performance_reports do
           get '(/role/:role_id)', action: :index
@@ -147,7 +151,11 @@ Rails.application.routes.draw do
     end
 
     resources :notifications, only: [:index]
+
+
   end
+
+
 
   namespace 'admin' do
     root to: 'console#index'
