@@ -6,8 +6,8 @@ RSpec.describe Admin::StatsController, type: :controller do
   let(:admin) { FactoryGirl.create(:user, :administrator) }
 
   context "GET #courses" do
-    let(:course)         { Entity::Course.create! }
-    let(:periods)       do
+    let(:course)         { FactoryGirl.create :entity_course }
+    let(:periods)        do
       3.times.map { FactoryGirl.create :course_membership_period, course: course }
     end
 
@@ -35,10 +35,10 @@ RSpec.describe Admin::StatsController, type: :controller do
     }
 
     context "with excluded exercises in the database" do
-      let(:course)         { Entity::Course.create! }
+      let(:course)              { FactoryGirl.create :entity_course }
 
-      let(:teacher_user)   { FactoryGirl.create :user }
-      let!(:teacher_role)  { AddUserAsCourseTeacher[course: course, user: teacher_user] }
+      let(:teacher_user)        { FactoryGirl.create :user }
+      let!(:teacher_role)       { AddUserAsCourseTeacher[course: course, user: teacher_user] }
 
       let!(:excluded_exercises) do
         5.times.map { FactoryGirl.create :course_content_excluded_exercise, course: course }
@@ -61,9 +61,7 @@ RSpec.describe Admin::StatsController, type: :controller do
     end
 
     context "with 0 excluded exercises in the database" do
-      before(:each) do
-        expect(CourseContent::Models::ExcludedExercise.count).to eq 0
-      end
+      before(:each) { expect(CourseContent::Models::ExcludedExercise.count).to eq 0 }
 
       it "assigns @excluded_exercises_by_course as an empty array" do
         get :excluded_exercises
@@ -84,25 +82,23 @@ RSpec.describe Admin::StatsController, type: :controller do
   end
 
   context "POST #excluded_exercises_to_csv" do
-    before {
+    before do
       WebMock.disable_net_connect!
       stub_request(:put, /remote.php/).to_return(status: 200)
 
       controller.sign_in admin
-    }
+    end
 
-    let!(:course) { FactoryGirl.create :entity_course }
+    let!(:course)             { FactoryGirl.create :entity_course }
     let!(:excluded_exercises) do
       5.times.map { FactoryGirl.create :course_content_excluded_exercise, course: course }
     end
 
     context "with by_course and by_exercise params" do
       it "creates a background job" do
-        expect{
+        expect do
           post :excluded_exercises_to_csv, export: { by: ["course", "exercise"] }
-        }.to change{
-          Jobba.all.count
-        }.by (1)
+        end.to change{ Jobba.all.count }.by(1)
       end
 
       it "does a redirect" do
@@ -128,17 +124,15 @@ RSpec.describe Admin::StatsController, type: :controller do
       end
 
       it "doesn't create a background job" do
-        expect{
+        expect do
           post :excluded_exercises_to_csv, export: { by: [""] }
-        }.to change{
-          Jobba.all.count
-        }.by (0)
+        end.to change{ Jobba.all.count }.by(0)
       end
     end
   end
 
   context "GET #concept_coach" do
-    let!(:tasks)    { 3.times.map { FactoryGirl.create :tasks_task, task_type: :concept_coach } }
+    let(:tasks)     { 3.times.map { FactoryGirl.create :tasks_task, task_type: :concept_coach } }
     let!(:cc_tasks) { tasks.map{ |task| FactoryGirl.create :tasks_concept_coach_task, task: task } }
 
     it "returns http success" do
