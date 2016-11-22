@@ -35,16 +35,16 @@ class ExportExerciseExclusions
 
   def exercises_by_ecosystems_and_pages
     @exercises_by_ecosystems_and_pages ||= {}.tap do |hash|
-      excluded_exercises = Content::Models::Exercise.where(number: all_excluded_exercise_numbers)
-                                                    .preload(page: :ecosystem)
+      exercises = Content::Models::Exercise.where(number: all_excluded_exercise_numbers)
+                                           .preload(page: :ecosystem)
 
-      excluded_exercises.each do |excluded_exercise|
-        page = excluded_exercise.page
+      exercises.each do |exercise|
+        page = exercise.page
         ecosystem = page.ecosystem
 
         hash[ecosystem] ||= {}
         hash[ecosystem][page] ||= []
-        hash[ecosystem][page] << excluded_exercise
+        hash[ecosystem][page] << exercise
       end
     end
   end
@@ -86,7 +86,7 @@ class ExportExerciseExclusions
     end
   end
 
-  def get_exercise_numbers_and_urls_for_exercise_numbers(numbers:)
+  def get_exercise_hashes_for_exercise_numbers(numbers:)
     numbers.map do |number|
       {
         exercise_number: number,
@@ -119,11 +119,11 @@ class ExportExerciseExclusions
 
   def exercises_by_course
     excluded_exercises.group_by(&:course).map do |course, excluded_exercises|
-      numbers = excluded_exercises.flat_map(&:exercise_number)
+      numbers = excluded_exercises.map(&:exercise_number)
       ecosystem = course.ecosystems.first
       book = ecosystem.try!(:books).try!(:first)
       book_hash = { book_title: book.try!(:title), book_uuid: book.try!(:uuid) }
-      exercises_hash = get_exercise_numbers_and_urls_for_exercise_numbers(numbers: numbers)
+      exercises_hash = get_exercise_hashes_for_exercise_numbers(numbers: numbers)
       page_hashes = get_page_hashes_for_ecosystems_and_exercise_numbers(
         ecosystems: [ecosystem], numbers: numbers
       )
@@ -136,6 +136,7 @@ class ExportExerciseExclusions
         book_hash: book_hash,
         excluded_exercises_count: excluded_exercises.length,
         excluded_exercises_hash: exercises_hash,
+        excluded_ats: excluded_exercises.map(&:created_at),
         page_hashes: page_hashes
       )
     end
@@ -143,7 +144,7 @@ class ExportExerciseExclusions
 
   def exercises_by_exercise
     excluded_exercises.group_by(&:exercise_number).map do |number, excluded_exercises|
-      exercises_hash = get_exercise_numbers_and_urls_for_exercise_numbers(numbers: [number])
+      exercises_hash = get_exercise_hashes_for_exercise_numbers(numbers: [number])
       page_hashes = get_page_hashes_for_ecosystems_and_exercise_numbers(numbers: [number])
 
       Hashie::Mash.new(
@@ -162,14 +163,15 @@ class ExportExerciseExclusions
         "Course Name",
         "Course Type",
         "Teachers",
-        "Book Name",
-        "Book UUID",
         "# Exclusions",
-        "Excluded Numbers",
-        "Excluded Numbers URLs",
-        "CNX Section UUID",
-        "CNX Section UUID URLs",
-        "Book Locations"
+        "Excluded Exercise Numbers",
+        "Excluded Exercise URLs",
+        "Exclusion Timestamps",
+        "CNX Book Title",
+        "CNX Book UUID",
+        "CNX Book Locations",
+        "CNX Page UUIDs",
+        "CNX Page URLs"
       ])
 
       exercises_by_course.each do |mash|
@@ -178,14 +180,15 @@ class ExportExerciseExclusions
           mash.course_name,
           mash.course_type,
           mash.teachers,
-          mash.book_hash[:book_title],
-          mash.book_hash[:book_uuid],
           mash.excluded_exercises_count,
           mash.excluded_exercises_hash.map(&:exercise_number).join(", "),
           mash.excluded_exercises_hash.map(&:exercise_url).join(", "),
+          mash.excluded_ats.map{ |excluded_at| DateTimeUtilities.to_api_s(excluded_at) }.join(", "),
+          mash.book_hash[:book_title],
+          mash.book_hash[:book_uuid],
+          mash.page_hashes.map(&:book_location).join(", "),
           mash.page_hashes.map(&:page_uuid).join(", "),
-          mash.page_hashes.map(&:page_url).join(", "),
-          mash.page_hashes.map(&:book_location).join(", ")
+          mash.page_hashes.map(&:page_url).join(", ")
         ])
       end
     end
@@ -194,11 +197,11 @@ class ExportExerciseExclusions
   def generate_by_exercise_csv
     CSV.open(filepath_by_exercise, "w") do |file|
       file.add_row([
-        "Exercise Number",
-        "Exercise Number URL",
+        "Excluded Exercise Number",
+        "Excluded Exercise URL",
         "# Exclusions",
-        "CNX Section UUID(s)",
-        "CNX Section UUID(s) URLs"
+        "CNX Page UUIDs",
+        "CNX Page URLs"
       ])
 
       exercises_by_exercise.each do |mash|
