@@ -6,10 +6,12 @@ RSpec.describe Api::V1::CoursesController, type: :controller, api: true,
                                            version: :v1, speed: :slow, vcr: VCR_OPTS do
 
   let(:user_1)         { FactoryGirl.create(:user) }
-  let(:user_1_token)   { FactoryGirl.create :doorkeeper_access_token, resource_owner_id: user_1.id }
+  let(:user_1_token)   { FactoryGirl.create :doorkeeper_access_token,
+                                            resource_owner_id: user_1.id }
 
   let(:user_2)         { FactoryGirl.create(:user) }
-  let(:user_2_token)   { FactoryGirl.create :doorkeeper_access_token, resource_owner_id: user_2.id }
+  let(:user_2_token)   { FactoryGirl.create :doorkeeper_access_token,
+                                            resource_owner_id: user_2.id }
 
   let(:userless_token) { FactoryGirl.create :doorkeeper_access_token }
 
