@@ -96,10 +96,9 @@ class ExportExerciseExclusions
   end
 
   def get_page_hashes_for_ecosystems_and_exercise_numbers(numbers:, ecosystems: nil)
-    (ecosystems || pages_by_ecosystems_and_exercise_numbers.keys).flat_map do |ecosystem|
-      pages_by_exercise_numbers = pages_by_ecosystems_and_exercise_numbers[ecosystem] || {}
-
-      numbers.flat_map do |number|
+    numbers.flat_map do |number|
+      hashes = (ecosystems || pages_by_ecosystems_and_exercise_numbers.keys).flat_map do |ecosystem|
+        pages_by_exercise_numbers = pages_by_ecosystems_and_exercise_numbers[ecosystem] || {}
         pages = pages_by_exercise_numbers[number] || []
 
         pages.map do |page|
@@ -110,6 +109,8 @@ class ExportExerciseExclusions
           }
         end
       end
+
+      hashes.empty? ? [{ page_uuid: 'null', page_url: 'null', book_location: 'null' }] : hashes
     end
   end
 
