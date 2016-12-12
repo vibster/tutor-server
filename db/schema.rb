@@ -11,7 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 20161108152717) do
+=======
+ActiveRecord::Schema.define(version: 20161212211910) do
+>>>>>>> 3654555... Add title and order to catalog offerings
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,10 +34,14 @@ ActiveRecord::Schema.define(version: 20161108152717) do
     t.string   "default_course_name"
     t.string   "appearance_code"
     t.boolean  "is_available",                         null: false
+    t.string   "title",                                null: false
+    t.integer  "number",                               null: false
   end
 
   add_index "catalog_offerings", ["content_ecosystem_id"], name: "index_catalog_offerings_on_content_ecosystem_id", using: :btree
+  add_index "catalog_offerings", ["number"], name: "index_catalog_offerings_on_number", unique: true, using: :btree
   add_index "catalog_offerings", ["salesforce_book_name"], name: "index_catalog_offerings_on_salesforce_book_name", unique: true, using: :btree
+  add_index "catalog_offerings", ["title"], name: "index_catalog_offerings_on_title", using: :btree
 
   create_table "content_books", force: :cascade do |t|
     t.string   "url",                                            null: false
