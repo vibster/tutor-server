@@ -11,11 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema.define(version: 20161108152717) do
-=======
 ActiveRecord::Schema.define(version: 20161212211910) do
->>>>>>> 3654555... Add title and order to catalog offerings
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
