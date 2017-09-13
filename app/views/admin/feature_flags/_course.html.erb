@@ -1,0 +1,16 @@
+<%# partial that takes a course ID and FF name, if there is a FF, show it and allow toggling,
+  if not allow it to be initialized for it %>
+
+<% if false %>
+<% existing_ffs = FeatureFlag.where(course_profile_course_id: course.id) %>
+
+<table class="table table-striped">
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+</table>
+
+<%# FeatureFlag.where(name: FeatureFlag.) %>
+<% end %>

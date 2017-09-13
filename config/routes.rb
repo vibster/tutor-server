@@ -317,6 +317,8 @@ Rails.application.routes.draw do
         put :extend_payment_due_at
       end
     end
+
+    resources :feature_flags, only: [:index, :show, :update, :create, :new]
   end
 
   # match '/auth/salesforce/callback', to: 'admin/salesforce#callback', via: [:get, :post]

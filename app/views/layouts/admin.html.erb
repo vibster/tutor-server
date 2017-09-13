@@ -90,6 +90,7 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">System Setting<span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><%= link_to 'Settings', main_app.admin_rails_settings_ui_path %></li>
+                <li><%= link_to 'Feature Flags', main_app.admin_feature_flags_path %></li>
                 <li><%= link_to 'Notifications', main_app.admin_notifications_path %></li>
                 <% if Timecop.enabled? %>
                   <li><%= link_to 'Time Travel', main_app.admin_timecop_path %></li>

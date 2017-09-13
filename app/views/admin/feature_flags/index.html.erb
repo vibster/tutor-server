@@ -1,0 +1,17 @@
+<% @page_header = "Feature Flags" %>
+
+<table class='table table-striped'>
+  <tr>
+    <th>Name</th>
+    <th>Global Value</th>
+  </tr>
+<%
+  globals = FeatureFlag.globals
+  FeatureFlag.names.keys.each do |name|
+%>
+  <tr>
+    <td><%= link_to name, admin_feature_flag_path(name) %></td>
+    <td><%= globals[name.to_sym].to_s %></td>
+  </tr>
+<% end %>
+</table>

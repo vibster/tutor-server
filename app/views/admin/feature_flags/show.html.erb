@@ -1,0 +1,53 @@
+<% @page_header = "Feature Flag: <span style='font-size: -1; font-family: Menlo, Monaco, Consolas, \"Courier New\", monospace;'>#{params[:id]}</span>".html_safe %>
+
+<%
+  global_ff = @ffs.select(&:is_global)
+  course_ffs = @ffs.select{|ff| ff.course_profile_course_id.present?}
+%>
+
+<h3>Global Setting</h3>
+
+<a href="#">
+  <%= best_in_place global_ff,
+                    :value,
+                    as: :checkbox,
+                    url: admin_feature_flag_path(global_ff),
+                    collection: {false: "False", true: "True"} %>
+</a>
+
+<h3>Course Settings</h3>
+
+<table class='table table-striped'>
+  <tr>
+    <th>Course ID</th>
+    <th>Course Name</th>
+    <th>Teachers</th>
+    <th>Value</th>
+  </tr>
+
+  <% course_ffs.each do |course_ff| %>
+    <% course = course_ff.course %>
+    <tr>
+      <td><%= course.id %></td>
+      <td><%= course.name %></td>
+      <td><%= course.teachers.map(&:name).join(', ') %></td>
+      <td>
+        <a href="#">
+          <%= best_in_place course_ff,
+                            :value,
+                            as: :checkbox,
+                            url: admin_feature_flag_path(course_ff),
+                            collection: {false: "False", true: "True"} %>
+        </a>
+      </td>
+    </tr>
+  <% end %>
+</table>
+
+<% content_for :javascript do %>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      jQuery(".best_in_place").best_in_place();
+    });
+  </script>
+<% end %>
